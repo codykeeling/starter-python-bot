@@ -106,3 +106,24 @@ class RtmEventHandler(object):
 # else{
 # session.sendMessage(event.channel, event.messageContent.substring(8 + 9).trim() + " is taken", null)
 # }
+
+#
+#     def getGiphy(def event){
+#     def key = "dc6zaTOxFJmzC"
+#     def message = event.messageContent.substring(8).trim()
+#     //find gif
+#     def urlEncodedMessage = URLEncoder.encode(message, "UTF-8")
+#     def url = "http://api.giphy.com"
+#     def path = "/v1/gifs/search"
+#     def query = ['q':urlEncodedMessage,'api_key':key,'limit':1,'rating':'pg']
+#     println path
+#
+#     println url + path
+#
+#     HTTPBuilder restClient = new HTTPBuilder(url)
+#     def response = restClient.request(Method.GET, ContentType.JSON){
+#         uri.path=path
+#     uri.query = query
+#     }
+#     return  response.data.get(0).images.downsized.url
+# }
