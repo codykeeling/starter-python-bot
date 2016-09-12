@@ -4,6 +4,7 @@ import requests
 import re
 import urllib
 import pprint
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,8 @@ class RtmEventHandler(object):
                 elif message.startswith('echo'):
                     self.msg_writer.send_message(event['channel'], self.clients.substring_message_without_trigger_word(message,'echo'))
                 elif 'joke' in msg_txt:
-                    self.msg_writer.write_joke(event['channel'])
+                    text = self.ask_for_joke()
+                    self.msg_writer.send_message(event['channel'], text)
                 elif re.search('hi|hey|hello|howdy', msg_txt, re.IGNORECASE):
                     self.msg_writer.write_greeting(event['channel'], event['user'])
                 # elif 'attachment' in msg_txt:
@@ -108,9 +110,21 @@ class RtmEventHandler(object):
         pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(map)
         url_string = map['data'][0]['images']['downsized']['url']
-        print url_string
+
 
         return url_string
+
+    def ask_for_joke(self):
+        key = "dc6zaTOxFJmzC"
+        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'1':random.randint(1,999)}
+
+        session = requests.Session()
+        response = session.get("http://www.randomjokegenerator.com/getJoke.php", params=payload)
+
+        # print response.text
+        # print response.text.replace("&joke=","")
+        return response.text.replace("&joke=","")
 
 # else if(message.startsWith("username")){
 # String response = checkUsername(event)
