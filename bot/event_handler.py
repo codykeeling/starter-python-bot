@@ -62,7 +62,7 @@ class RtmEventHandler(object):
                     self.msg_writer.send_message(event['channel'], self.clients.substring_message_without_trigger_word(message,'echo'))
                 elif 'joke' in msg_txt:
                     self.msg_writer.write_joke(event['channel'])
-                elif re.search('hi|hey|hello|howdy', msg_txt):
+                elif re.search('hi|hey|hello|howdy', msg_txt, re.IGNORECASE):
                     self.msg_writer.write_greeting(event['channel'], event['user'])
                 # elif 'attachment' in msg_txt:
                 #     self.msg_writer.demo_attachment(event['channel'])
