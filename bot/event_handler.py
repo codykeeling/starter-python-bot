@@ -2,6 +2,8 @@ import json
 import logging
 import requests
 import re
+import urllib
+import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -35,13 +37,12 @@ class RtmEventHandler(object):
 
     def strip_user_from_msg(self, message, username):
         msg = message[len(username)+4:].strip()
-        print 'trimmed message: ' + msg
+        # print 'trimmed message: ' + msg
         return msg
 
 
     def _handle_message(self, event):
-        # Filter out messages from the bot itself
-        if not self.clients.is_message_from_me(event['user']):
+        if event.get('user') is not None and not self.clients.is_message_from_me(event['user']):
 
             msg_txt = event['text']
             if self.clients.is_bot_mention(msg_txt):
@@ -53,6 +54,10 @@ class RtmEventHandler(object):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'username').strip();
                     status = self.ask_for_username(user_to_check)
                     self.eval_username(event, status, user_to_check)
+                elif message.startswith('gif'):
+                    gif_to_check = self.clients.substring_message_without_trigger_word(message,'gif').strip();
+                    url = self.ask_for_gif(gif_to_check)
+                    self.msg_writer.send_message(event['channel'], url)
                 elif message.startswith('echo'):
                     self.msg_writer.send_message(event['channel'], self.clients.substring_message_without_trigger_word(message,'echo'))
                 elif 'joke' in msg_txt:
@@ -87,6 +92,25 @@ class RtmEventHandler(object):
         response = session.post("http://checkgamertag.com/CheckGamertag.php", headers=headers, data=payload)
 
         return response.text
+
+    def ask_for_gif(self, gif_request):
+        key = "dc6zaTOxFJmzC"
+        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'q':gif_request,'api_key':key,'limit':1,'rating':'pg'}
+
+        session = requests.Session()
+        response = session.get("http://api.giphy.com/v1/gifs/search", params=payload)
+
+        map = {}
+        map = response.text
+        map = json.loads(map)
+
+        pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(map)
+        url_string = map['data'][0]['images']['downsized']['url']
+        print url_string
+
+        return url_string
 
 # else if(message.startsWith("username")){
 # String response = checkUsername(event)
