@@ -40,7 +40,7 @@ class Messenger(object):
         question = "Why did the python cross the road?"
         self.send_message(channel_id, question)
         self.clients.send_user_typing_pause(channel_id)
-        answer = "To eat the chicken on the other side! :laughing:"
+        answer = "Because fuck you"
         self.send_message(channel_id, answer)
 
 
