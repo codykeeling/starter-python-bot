@@ -105,10 +105,15 @@ class RtmEventHandler(object):
 
         map = {}
         map = response.text
+        print response.text
         map = json.loads(map)
 
         pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(map)
+        pp.pprint(map)
+
+        if len(map['data']) == 0:
+            return "http://i.imgur.com/epXFh5B.gifv"
+
         url_string = map['data'][0]['images']['downsized']['url']
 
 
