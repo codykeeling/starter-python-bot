@@ -58,6 +58,10 @@ class RtmEventHandler(object):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'username').strip();
                     status = self.ask_for_username(user_to_check)
                     self.eval_username(event, status, user_to_check)
+                elif message.startswith('hours'):
+                    user_to_check = self.clients.substring_message_without_trigger_word(message,'hours').strip();
+                    hours = self.hours_played(user_to_check)
+                    self.msg_writer.send_message(event['channel'], user_to_check + " has played " + str(hours) + " hours")
                 elif message.startswith('gif'):
                     gif_to_check = self.clients.substring_message_without_trigger_word(message,'gif').strip();
                     url = self.ask_for_gif(gif_to_check)
@@ -97,6 +101,25 @@ class RtmEventHandler(object):
         response = session.post("http://checkgamertag.com/CheckGamertag.php", headers=headers, data=payload)
 
         return response.text
+
+    def hours_played(self, username):
+        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'console':'1','user':username}
+
+        session = requests.Session()
+        response = session.get("https://www.wastedondestiny.com/api/", params=payload)
+        print response.text
+        map = json.loads(response.text)
+        print map
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(map)
+
+        try:
+            hours = map['Response']['totalTimePlayed']
+            hours = hours/60/60
+            return hours
+        except:
+            return 0
 
     def ask_for_gif(self, gif_request):
         key = "dc6zaTOxFJmzC"
