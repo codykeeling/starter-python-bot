@@ -69,7 +69,12 @@ class RtmEventHandler(object):
                     self.msg_writer.send_message(event['channel'], url)
                 elif message.startswith('echo'):
                     self.msg_writer.send_message(event['channel'], self.clients.substring_message_without_trigger_word(message,'echo'))
-                elif 'joke' in msg_txt:
+                elif 'dadjoke' in msg_txt:
+                    text = self.ask_for_dad_joke()
+                    self.msg_writer.send_message(event['channel'], text['SETUP'])
+                    self.clients.send_user_typing_pause(event['channel'])
+                    self.msg_writer.send_message(event['channel'], text['PUNCHLINE'])
+                elif 'joke' in msg_txt and 'dadjoke' not in msg_txt:
                     text = self.ask_for_joke()
                     self.msg_writer.send_message(event['channel'], text)
                 elif re.search('hi|hey|hello|howdy', msg_txt, re.IGNORECASE):
@@ -162,11 +167,33 @@ class RtmEventHandler(object):
         payload = {'1':random.randint(1,999)}
 
         session = requests.Session()
-        response = session.get("http://www.randomjokegenerator.com/getJoke.php", params=payload)
+        response = session.get("http://www.randomjokegenerator.com/getJoke.php",  params=payload)
 
         # print response.text
         # print response.text.replace("&joke=","")
         return response.text.replace("&joke=","")
+
+    def ask_for_dad_joke(self):
+        key = "dc6zaTOxFJmzC"
+        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'a':'j','lt':'r','vj':'0,10'}
+
+        session = requests.Session()
+        response = session.post("http://www.dadjokegenerator.com/api/api.php", headers=headers, params=payload)
+
+        print response.text
+
+        map = {}
+        map = response.text
+        # print response.text
+        map = json.loads(map)
+
+        # print map[0]["SETUP"]
+        # print "and"
+        # print map[0]["PUNCHLINE"]
+
+        # print response.text.replace("&joke=","")
+        return map[0]
 
 # else if(message.startsWith("username")){
 # String response = checkUsername(event)
