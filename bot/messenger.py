@@ -18,10 +18,11 @@ class Messenger(object):
 
     def write_help_message(self, channel_id):
         bot_uid = self.clients.bot_user_id()
-        txt = '{}\n{}\n{}\n{}\n{}\n{}'.format(
+        txt = '{}\n{}\n{}\n{}\n{}\n{}\n{}'.format(
             "Hello I'm hawbot.  I'll *_respond_* to the following commands:",
             "> `hi <@" + bot_uid + ">` - I'll respond with a randomized greeting mentioning your user. :wave:",
-            "> `<@" + bot_uid + "> joke` - I'll tell you one of my finest jokes, with a typing pause for effect. :laughing:",
+            "> `<@" + bot_uid + "> joke` - I'll tell you some dumbass joke from the 90s that I found on a Web 1.0 website :facepalm:",
+            "> `<@" + bot_uid + "> dadjoke` - I'll tell you one of my finest jokes, with a typing pause for effect. :laughing:",
             "> `<@" + bot_uid + "> gif [search string]` - I'll look for a shitty gif that isn't what you're looking for :smugdon:",
             "> `<@" + bot_uid + "> username [username]` - I'll check on the username availability in a messed up way. :paperclip:",
             "> `<@" + bot_uid + "> hours [Xbox username]` - I'll tell you how much someone has poopsocked. :conebros:")
