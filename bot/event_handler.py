@@ -33,6 +33,7 @@ class RtmEventHandler(object):
         elif event_type == 'channel_joined':
             # you joined a channel
             self.msg_writer.write_help_message(event['channel'])
+            self.msg_writer.write_help_message(event['channel'])
         elif event_type == 'group_joined':
             # you joined a private group
             self.msg_writer.write_help_message(event['channel'])
@@ -108,9 +109,9 @@ class RtmEventHandler(object):
 
         session = requests.Session()
         response = session.get("https://www.wastedondestiny.com/api/", params=payload)
-        print response.text
+        # print response.text
         map = json.loads(response.text)
-        print map
+        # print map
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(map)
 
@@ -131,7 +132,7 @@ class RtmEventHandler(object):
 
         map = {}
         map = response.text
-        print response.text
+        # print response.text
         map = json.loads(map)
 
         pp = pprint.PrettyPrinter(indent=4)
