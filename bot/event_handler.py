@@ -91,7 +91,7 @@ class RtmEventHandler(object):
             self.msg_writer.send_message(event['channel'], user_to_check + " is available")
         elif status == 'length':
             self.msg_writer.send_message(event['channel'],
-                                         user_to_check + " is too long to be a Xbox One Premier Entertainment and Gaming System userame.")
+                                         user_to_check + " is too long to be a Xbox One Premier Entertainment and Gaming System userlame.")
         elif status == 'first char':
             self.msg_writer.send_message(event['channel'], "username must start with an alpha character")
         elif status == 'illegal characters':
@@ -100,7 +100,7 @@ class RtmEventHandler(object):
             self.msg_writer.send_message(event['channel'], user_to_check + " is taken")
 
     def ask_for_username(self, username):
-        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4','Content-Type': 'application/x-www-form-urlencoded'}
         payload = { 'tag':username}
 
         session = requests.Session()
