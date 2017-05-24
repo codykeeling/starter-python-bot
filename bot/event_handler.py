@@ -59,7 +59,7 @@ class RtmEventHandler(object):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'username').strip();
 
                     if 'U1TUSDTPC' in event.get('user'):
-                        self.msg_writer.send_message(event['channel'], "go eat a dick")
+                        self.msg_writer.send_message(event['channel'], "Drain can go eat a dick")
                     else:
                         status = self.ask_for_username(user_to_check)
                         self.eval_username(event, status, user_to_check)
