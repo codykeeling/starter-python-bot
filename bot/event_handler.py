@@ -57,8 +57,12 @@ class RtmEventHandler(object):
                     self.msg_writer.write_help_message(event['channel'])
                 elif message.startswith('username'):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'username').strip();
-                    status = self.ask_for_username(user_to_check)
-                    self.eval_username(event, status, user_to_check)
+
+                    if 'U1TUSDTPC' in event.get('user'):
+                        self.msg_writer.send_message(event['channel'], "go eat a dick")
+                    else:
+                        status = self.ask_for_username(user_to_check)
+                        self.eval_username(event, status, user_to_check)
                 elif message.startswith('hours'):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'hours').strip();
                     hours = self.hours_played(user_to_check)
@@ -100,11 +104,21 @@ class RtmEventHandler(object):
             self.msg_writer.send_message(event['channel'], user_to_check + " is taken")
 
     def ask_for_username(self, username):
-        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4','Content-Type': 'application/x-www-form-urlencoded'}
-        payload = { 'tag':username}
+        payload = {'tag':username}
 
-        session = requests.Session()
-        response = session.post("http://checkgamertag.com/CheckGamertag.php", headers=headers, data=payload)
+        if username[0].isdigit():
+            return 'first char'
+
+        if not all(x.isalnum() or x.isspace() for x in username):
+            return 'illegal characters'
+
+        if len(username) > 15:
+            return 'length'
+
+        response = requests.post("http://www.gamertag.net/", data=payload)
+
+        if "is available to use!" in response.text:
+            return 'available'
 
         return response.text
 
