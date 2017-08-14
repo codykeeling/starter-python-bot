@@ -50,7 +50,7 @@ class RtmEventHandler(object):
         if event.get('user') is not None and not self.clients.is_message_from_me(event['user']):
 
             msg_txt = event['text']
-            if self.clients.is_bot_mention(msg_txt):
+            if self.clients.is_bot_mention(msg_txt) and 'U1TUSDTPC' not in event.get('user'):
                 message = self.strip_user_from_msg(msg_txt, event['user'])
                 # e.g. user typed: "@pybot tell me a joke!"
                 if 'help' in message:
