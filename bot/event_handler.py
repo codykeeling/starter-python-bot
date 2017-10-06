@@ -67,7 +67,7 @@ class RtmEventHandler(object):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'hours').strip();
                     hours = self.hours_played(user_to_check)
                     self.msg_writer.send_message(event['channel'], user_to_check + " has played " + str(hours) + " hours")
-                elif message.startswith('elo'):
+                elif message.lower().startswith('elo'):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'elo').strip();
                     mode = 'control'
                     elo = self.elo(user_to_check,mode)
@@ -148,6 +148,7 @@ class RtmEventHandler(object):
             return 0
 
     def elo(self,username,mode):
+        mode = mode.lower()
         headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4', 'Host':'api.guardian.gg', 'Accept':'application/json, text/plain,*/*',
                    'Referer':'https://guardian.gg/2/profile/1/{0}'.format(username),'origin':'https://guardian.gg'}
         payload = {'console':'1','user':username}
