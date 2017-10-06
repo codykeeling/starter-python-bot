@@ -40,6 +40,23 @@ def hours_played(username):
     return "{0} is not an acceptable game mode (control,clash,supremacy,survival,countdown,trials)".format(mode)
 
 
+def substring_message_game_mode(cleanString):
+    splits = cleanString.split()
+    print splits
+    print splits[0]
+    if splits[0] in eloTypes.keys():
+        return splits[0]
+    return 'control'
+
+def substring_message_username(cleanString):
+    splits = cleanString.split()
+    print splits
+    print splits[0]
+    if splits[0] in eloTypes.keys():
+        first, _, rest = cleanString.partition(" ")
+        return rest
+    return cleanString
+
 def elo(username,mode):
     headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4', 'Host':'api.guardian.gg', 'Accept':'application/json, text/plain,*/*',
                'Referer':'https://guardian.gg/2/profile/1/{0}'.format(username),'origin':'https://guardian.gg'}
@@ -47,9 +64,13 @@ def elo(username,mode):
 
     string = "elo control MoistTurtleneck"
     cleanString = substring_message_without_trigger_word(string,"elo")
+    cleanStringModes = substring_message_game_mode(cleanString)
+    cleanStringUsername = substring_message_username(cleanString)
     print cleanString
+    print cleanStringModes
+    print cleanStringUsername
 
-    if cleanString.split()[0] in eloTypes.keys:
+    if cleanString.split()[0] in eloTypes.keys():
         print "hi"
 
     session = requests.Session()

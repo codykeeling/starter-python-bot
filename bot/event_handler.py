@@ -12,6 +12,24 @@ eloTypes = {'control':10,'clash':12,'supremacy':31,'survival':37,'countdown':38,
 logger = logging.getLogger(__name__)
 
 
+
+def substring_message_game_mode(cleanString):
+    splits = cleanString.split()
+    print splits
+    print splits[0]
+    if splits[0] in eloTypes.keys():
+        return splits[0]
+    return cleanString
+    return 'control'
+
+def substring_message_username(cleanString):
+    splits = cleanString.split()
+    print splits
+    print splits[0]
+    if splits[0] in eloTypes.keys():
+        first, _, rest = cleanString.partition(" ")
+        return rest
+
 class RtmEventHandler(object):
     def __init__(self, slack_clients, msg_writer):
         self.clients = slack_clients
@@ -147,11 +165,23 @@ class RtmEventHandler(object):
         except:
             return 0
 
+
+
     def elo(self,username,mode):
-        mode = mode.lower()
         headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4', 'Host':'api.guardian.gg', 'Accept':'application/json, text/plain,*/*',
                    'Referer':'https://guardian.gg/2/profile/1/{0}'.format(username),'origin':'https://guardian.gg'}
         payload = {'console':'1','user':username}
+
+        string = "elo control MoistTurtleneck"
+        cleanString = self.clients.substring_message_without_trigger_word(string,"elo")
+        cleanStringModes = substring_message_game_mode(cleanString)
+        cleanStringUsername = substring_message_username(cleanString)
+        print cleanString
+        print cleanStringModes
+        print cleanStringUsername
+
+        if cleanString.split()[0] in eloTypes.keys():
+            print "hi"
 
         session = requests.Session()
         response = session.get("https://api.guardian.gg/v2/players/1/{0}?lc=en".format(username), headers=headers)
@@ -171,6 +201,32 @@ class RtmEventHandler(object):
             except:
                 return 0
         return "{0} is not an acceptable game mode (control,clash,supremacy,survival,countdown,trials)".format(mode)
+    # def elo(self,username,mode):
+    #     mode = mode.lower()
+    #     headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4', 'Host':'api.guardian.gg', 'Accept':'application/json, text/plain,*/*',
+    #                'Referer':'https://guardian.gg/2/profile/1/{0}'.format(username),'origin':'https://guardian.gg'}
+    #     payload = {'console':'1','user':username}
+    #
+    #     session = requests.Session()
+    #     response = session.get("https://api.guardian.gg/v2/players/1/{0}?lc=en".format(username), headers=headers)
+    #     # print response.text
+    #     map = json.loads(response.text)
+    #     # print map
+    #     # pp = pprint.PrettyPrinter(indent=4)
+    #     # pp.pprint(map)
+    #
+    #     if mode in eloTypes:
+    #         try:
+    #             elos = map['player']['stats']
+    #             print elos
+    #             controlElo = elos[next(index for (index, d) in enumerate(elos) if d["mode"] == eloTypes[mode])]
+    #             print controlElo
+    #             return controlElo
+    #         except:
+    #             return 0
+    #     return "{0} is not an acceptable game mode (control,clash,supremacy,survival,countdown,trials)".format(mode)
+
+
 
     def ask_for_gif(self, gif_request):
         key = "dc6zaTOxFJmzC"
