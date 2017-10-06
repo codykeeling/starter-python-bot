@@ -8,9 +8,17 @@ import random
 from imgurpython import ImgurClient
 import random
 
-eloTypes = {'control':10,'clash':12,'supremacy':31,'survival':37,'countdown':38,'trials':39}
+eloTypes = {'control': 10, 'clash': 12, 'supremacy': 31, 'survival': 37, 'countdown': 38, 'trials': 39}
 logger = logging.getLogger(__name__)
 
+
+def substring_message_no_hawbot(cleanString):
+    splits = cleanString.split()
+    print splits
+    print splits[0]
+    if splits[0] in eloTypes.keys():
+        return splits[0]
+    return 'control'
 
 
 def substring_message_game_mode(cleanString):
@@ -19,8 +27,8 @@ def substring_message_game_mode(cleanString):
     print splits[0]
     if splits[0] in eloTypes.keys():
         return splits[0]
-    return cleanString
     return 'control'
+
 
 def substring_message_username(cleanString):
     splits = cleanString.split()
@@ -29,6 +37,7 @@ def substring_message_username(cleanString):
     if splits[0] in eloTypes.keys():
         first, _, rest = cleanString.partition(" ")
         return rest
+
 
 class RtmEventHandler(object):
     def __init__(self, slack_clients, msg_writer):
@@ -59,10 +68,9 @@ class RtmEventHandler(object):
             pass
 
     def strip_user_from_msg(self, message, username):
-        msg = message[len(username)+4:].strip()
+        msg = message[len(username) + 4:].strip()
         # print 'trimmed message: ' + msg
         return msg
-
 
     def _handle_message(self, event):
         if event.get('user') is not None and not self.clients.is_message_from_me(event['user']):
@@ -74,7 +82,7 @@ class RtmEventHandler(object):
                 if 'help' in message:
                     self.msg_writer.write_help_message(event['channel'])
                 elif message.startswith('username'):
-                    user_to_check = self.clients.substring_message_without_trigger_word(message,'username').strip();
+                    user_to_check = self.clients.substring_message_without_trigger_word(message, 'username').strip();
 
                     if 'U1TUSDTPC' in event.get('user'):
                         self.msg_writer.send_message(event['channel'], "Drain can go eat a dick")
@@ -82,21 +90,41 @@ class RtmEventHandler(object):
                         status = self.ask_for_username(user_to_check)
                         self.eval_username(event, status, user_to_check)
                 elif message.startswith('hours'):
-                    user_to_check = self.clients.substring_message_without_trigger_word(message,'hours').strip();
+                    user_to_check = self.clients.substring_message_without_trigger_word(message, 'hours').strip();
                     hours = self.hours_played(user_to_check)
-                    self.msg_writer.send_message(event['channel'], user_to_check + " has played " + str(hours) + " hours")
+                    self.msg_writer.send_message(event['channel'],
+                                                 user_to_check + " has played " + str(hours) + " hours")
                 elif message.lower().startswith('elo'):
-                    user_to_check = self.clients.substring_message_without_trigger_word(message,'elo').strip();
-                    mode = 'control'
-                    elo = self.elo(user_to_check,mode)
-                    eloNumber = elo['elo']
-                    self.msg_writer.send_message(event['channel'], user_to_check + " has control elo of " + str(eloNumber))
+                    user_to_check = self.clients.substring_message_without_trigger_word(message, 'elo').strip();
+
+                    # mode = 'control'
+                    # cleanString = substring_message_no_hawbot(user_to_check)
+                    cleanString = user_to_check
+                    print 'cleanString:{}'.format(cleanString)
+                    cleanStringModes = self.substring_message_game_mode(event,cleanString)
+                    cleanStringUsername = substring_message_username(cleanString)
+
+                    if not cleanStringUsername:
+                        cleanStringUsername = cleanString
+
+                    print "cleanStringUsername: " + cleanStringUsername
+                    print "cleanStringModes: " + cleanStringModes
+                    elo = self.elo(cleanStringUsername, cleanStringModes)
+
+                    if elo and 'elo' in elo:
+                        eloNumber = elo['elo']
+                    else:
+                        eloNumber = 69
+                    self.msg_writer.send_message(event['channel'],
+                                                 cleanStringUsername + " has a " + cleanStringModes + " elo of " + str(
+                                                     "{0:.0f}".format(eloNumber)))
                 elif message.startswith('gif'):
-                    gif_to_check = self.clients.substring_message_without_trigger_word(message,'gif').strip();
+                    gif_to_check = self.clients.substring_message_without_trigger_word(message, 'gif').strip();
                     url = self.ask_for_gif(gif_to_check)
                     self.msg_writer.send_message(event['channel'], url)
                 elif message.startswith('echo'):
-                    self.msg_writer.send_message(event['channel'], self.clients.substring_message_without_trigger_word(message,'echo'))
+                    self.msg_writer.send_message(event['channel'],
+                                                 self.clients.substring_message_without_trigger_word(message, 'echo'))
                 elif 'dadjoke' in msg_txt:
                     text = self.ask_for_dad_joke()
                     self.msg_writer.send_message(event['channel'], text['SETUP'])
@@ -128,7 +156,7 @@ class RtmEventHandler(object):
             self.msg_writer.send_message(event['channel'], user_to_check + " is taken")
 
     def ask_for_username(self, username):
-        payload = {'tag':username}
+        payload = {'tag': username}
 
         if username[0].isdigit():
             return 'first char'
@@ -147,8 +175,8 @@ class RtmEventHandler(object):
         return response.text
 
     def hours_played(self, username):
-        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
-        payload = {'console':'1','user':username}
+        headers = {'User-Agent': 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'console': '1', 'user': username}
 
         session = requests.Session()
         response = session.get("https://www.wastedondestiny.com/api/", params=payload)
@@ -160,33 +188,34 @@ class RtmEventHandler(object):
 
         try:
             hours = map['Response']['totalTimePlayed']
-            hours = hours/60/60
+            hours = hours / 60 / 60
             return hours
         except:
             return 0
 
+    def substring_message_game_mode(self, event, cleanString):
+        splits = cleanString.split()
+        # print splits
+        # print splits[0]
+        if splits[0] in eloTypes.keys():
+            return splits[0]
+        self.msg_writer.send_message(event['channel'],  "Available modes: " + str(eloTypes.keys()))
+        return 'control'
 
 
-    def elo(self,username,mode):
-        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4', 'Host':'api.guardian.gg', 'Accept':'application/json, text/plain,*/*',
-                   'Referer':'https://guardian.gg/2/profile/1/{0}'.format(username),'origin':'https://guardian.gg'}
-        payload = {'console':'1','user':username}
-
-        string = "elo control MoistTurtleneck"
-        cleanString = self.clients.substring_message_without_trigger_word(string,"elo")
-        cleanStringModes = substring_message_game_mode(cleanString)
-        cleanStringUsername = substring_message_username(cleanString)
-        print cleanString
-        print cleanStringModes
-        print cleanStringUsername
-
-        if cleanString.split()[0] in eloTypes.keys():
-            print "hi"
+    def elo(self, username, mode):
+        headers = {'User-Agent': 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4', 'Host': 'api.guardian.gg',
+                   'Accept': 'application/json, text/plain,*/*',
+                   'Referer': 'https://guardian.gg/2/profile/1/{0}'.format(username), 'origin': 'https://guardian.gg'}
 
         session = requests.Session()
         response = session.get("https://api.guardian.gg/v2/players/1/{0}?lc=en".format(username), headers=headers)
         # print response.text
-        map = json.loads(response.text)
+        if not response.text:
+            map = {}
+        else:
+            map = json.loads(response.text)
+            
         # print map
         # pp = pprint.PrettyPrinter(indent=4)
         # pp.pprint(map)
@@ -194,13 +223,12 @@ class RtmEventHandler(object):
         if mode in eloTypes:
             try:
                 elos = map['player']['stats']
-                print elos
                 controlElo = elos[next(index for (index, d) in enumerate(elos) if d["mode"] == eloTypes[mode])]
-                print controlElo
                 return controlElo
             except:
                 return 0
         return "{0} is not an acceptable game mode (control,clash,supremacy,survival,countdown,trials)".format(mode)
+
     # def elo(self,username,mode):
     #     mode = mode.lower()
     #     headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4', 'Host':'api.guardian.gg', 'Accept':'application/json, text/plain,*/*',
@@ -230,8 +258,8 @@ class RtmEventHandler(object):
 
     def ask_for_gif(self, gif_request):
         key = "dc6zaTOxFJmzC"
-        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
-        payload = {'q':gif_request,'api_key':key,'limit':1,'rating':'pg'}
+        headers = {'User-Agent': 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'q': gif_request, 'api_key': key, 'limit': 1, 'rating': 'pg'}
 
         session = requests.Session()
         response = session.get("http://api.giphy.com/v1/gifs/search", params=payload)
@@ -251,8 +279,8 @@ class RtmEventHandler(object):
             client = ImgurClient(client_id, client_secret)
             items = client.get_album_images('NLqMb')
 
-            link = items[random.randint(0,len(items)-1)].link
-            if(link.endswith('gif')):
+            link = items[random.randint(0, len(items) - 1)].link
+            if (link.endswith('gif')):
                 link = link.replace('.gif', '.gifv')
                 return link
 
@@ -264,20 +292,20 @@ class RtmEventHandler(object):
 
     def ask_for_joke(self):
         key = "dc6zaTOxFJmzC"
-        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
-        payload = {'1':random.randint(1,999)}
+        headers = {'User-Agent': 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'1': random.randint(1, 999)}
 
         session = requests.Session()
-        response = session.get("http://www.randomjokegenerator.com/getJoke.php",  params=payload)
+        response = session.get("http://www.randomjokegenerator.com/getJoke.php", params=payload)
 
         # print response.text
         # print response.text.replace("&joke=","")
-        return response.text.replace("&joke=","")
+        return response.text.replace("&joke=", "")
 
     def ask_for_dad_joke(self):
         key = "dc6zaTOxFJmzC"
-        headers = {'User-Agent' :'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
-        payload = {'a':'j','lt':'r','vj':'0,10'}
+        headers = {'User-Agent': 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'}
+        payload = {'a': 'j', 'lt': 'r', 'vj': '0,10'}
 
         session = requests.Session()
         response = session.post("http://www.dadjokegenerator.com/api/api.php", headers=headers, params=payload)
