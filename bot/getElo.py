@@ -32,6 +32,8 @@ def hours_played(username):
             print elos
             controlElo = elos[next(index for (index, d) in enumerate(elos) if d["mode"] == eloTypes['control'])]
             print controlElo
+            eloNumber = controlElo['elo']
+            print eloNumber
             return controlElo
         except:
             return 0

@@ -71,7 +71,8 @@ class RtmEventHandler(object):
                     user_to_check = self.clients.substring_message_without_trigger_word(message,'elo').strip();
                     mode = 'control'
                     elo = self.elo(user_to_check,mode)
-                    self.msg_writer.send_message(event['channel'], user_to_check + " has control elo of " + str(elo['elo']))
+                    eloNumber = elo['elo']
+                    self.msg_writer.send_message(event['channel'], user_to_check + " has control elo of " + str(eloNumber))
                 elif message.startswith('gif'):
                     gif_to_check = self.clients.substring_message_without_trigger_word(message,'gif').strip();
                     url = self.ask_for_gif(gif_to_check)
