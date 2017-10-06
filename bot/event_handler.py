@@ -166,7 +166,7 @@ class RtmEventHandler(object):
                 print elos
                 controlElo = elos[next(index for (index, d) in enumerate(elos) if d["mode"] == eloTypes[mode])]
                 print controlElo
-                return elos
+                return controlElo
             except:
                 return 0
         return "{0} is not an acceptable game mode (control,clash,supremacy,survival,countdown,trials)".format(mode)
