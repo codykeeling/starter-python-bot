@@ -155,8 +155,29 @@ class RtmEventHandler(object):
         else:
             self.msg_writer.send_message(event['channel'], user_to_check + " is taken")
 
+    # def ask_for_username(self, username):
+    #     payload = {'tag': username}
+    #
+    #     if username[0].isdigit():
+    #         return 'first char'
+    #
+    #     if not all(x.isalnum() or x.isspace() for x in username):
+    #         return 'illegal characters'
+    #
+    #     if len(username) > 15:
+    #         return 'length'
+    #
+    #     response = requests.post("http://www.gamertag.net/", data=payload)
+    #
+    #     if "is available to use!" in response.text:
+    #         return 'available'
+    #
+    #     return response.text
+
     def ask_for_username(self, username):
-        payload = {'tag': username}
+        payload = {'tag':username,'t':0.667003289277363}
+        headers = {'Content-type':'application/x-www-form-urlencoded'}
+
 
         if username[0].isdigit():
             return 'first char'
@@ -167,7 +188,20 @@ class RtmEventHandler(object):
         if len(username) > 15:
             return 'length'
 
-        response = requests.post("http://www.gamertag.net/", data=payload)
+        # response = requests.post("http://www.gamertag.net/", data=payload)
+        response = requests.post("https://checkgamertag.com/CheckGamertag.php", data=payload, headers=headers)
+        # payload = {'tag':username}
+        #
+        # if username[0].isdigit():
+        #     return 'first char'
+        #
+        # if not all(x.isalnum() or x.isspace() for x in username):
+        #     return 'illegal characters'
+        #
+        # if len(username) > 15:
+        #     return 'length'
+        #
+        # response = requests.post("http://www.gamertag.net/", data=payload)
 
         if "is available to use!" in response.text:
             return 'available'
