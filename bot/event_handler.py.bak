@@ -2,7 +2,7 @@ import json
 import logging
 import requests
 import re
-import urllib.request, urllib.parse, urllib.error
+import urllib
 import pprint
 import random
 from imgurpython import ImgurClient
@@ -16,7 +16,7 @@ def substring_message_no_hawbot(cleanString):
     splits = cleanString.split()
     #print splits
     #print splits[0]
-    if splits[0] in list(eloTypes.keys()):
+    if splits[0] in eloTypes.keys():
         return splits[0]
     return 'control'
 
@@ -25,7 +25,7 @@ def substring_message_game_mode(cleanString):
     splits = cleanString.split()
     #print splits
     #print splits[0]
-    if splits[0] in list(eloTypes.keys()):
+    if splits[0] in eloTypes.keys():
         return splits[0]
     return 'control'
 
@@ -34,7 +34,7 @@ def substring_message_username(cleanString):
     splits = cleanString.split()
     #print splits
     #print splits[0]
-    if splits[0] in list(eloTypes.keys()):
+    if splits[0] in eloTypes.keys():
         first, _, rest = cleanString.partition(" ")
         return rest
 
@@ -231,9 +231,9 @@ class RtmEventHandler(object):
         splits = cleanString.split()
         # print splits
         # print splits[0]
-        if splits[0] in list(eloTypes.keys()):
+        if splits[0] in eloTypes.keys():
             return splits[0]
-        self.msg_writer.send_message(event['channel'],  "Available modes: " + str(list(eloTypes.keys())))
+        self.msg_writer.send_message(event['channel'],  "Available modes: " + str(eloTypes.keys()))
         return 'control'
 
 
@@ -344,7 +344,7 @@ class RtmEventHandler(object):
         session = requests.Session()
         response = session.post("http://www.dadjokegenerator.com/api/api.php", headers=headers, params=payload)
 
-        print(response.text)
+        print response.text
 
         map = {}
         map = response.text

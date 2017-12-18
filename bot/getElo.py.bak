@@ -2,7 +2,7 @@ import json
 import logging
 import requests
 import re
-import urllib.request, urllib.parse, urllib.error
+import urllib
 import pprint
 import random
 from imgurpython import ImgurClient
@@ -29,11 +29,11 @@ def hours_played(username):
     if mode in eloTypes:
         try:
             elos = map['player']['stats']
-            print(elos)
+            print elos
             controlElo = elos[next(index for (index, d) in enumerate(elos) if d["mode"] == eloTypes['control'])]
-            print(controlElo)
+            print controlElo
             eloNumber = controlElo['elo']
-            print(eloNumber)
+            print eloNumber
             return controlElo
         except:
             return 0
@@ -42,17 +42,17 @@ def hours_played(username):
 
 def substring_message_game_mode(cleanString):
     splits = cleanString.split()
-    print(splits)
-    print(splits[0])
-    if splits[0] in list(eloTypes.keys()):
+    print splits
+    print splits[0]
+    if splits[0] in eloTypes.keys():
         return splits[0]
     return 'control'
 
 def substring_message_username(cleanString):
     splits = cleanString.split()
-    print(splits)
-    print(splits[0])
-    if splits[0] in list(eloTypes.keys()):
+    print splits
+    print splits[0]
+    if splits[0] in eloTypes.keys():
         first, _, rest = cleanString.partition(" ")
         return rest
     return cleanString
@@ -66,12 +66,12 @@ def elo(username,mode):
     cleanString = substring_message_without_trigger_word(string,"elo")
     cleanStringModes = substring_message_game_mode(cleanString)
     cleanStringUsername = substring_message_username(cleanString)
-    print(cleanString)
-    print(cleanStringModes)
-    print(cleanStringUsername)
+    print cleanString
+    print cleanStringModes
+    print cleanStringUsername
 
-    if cleanString.split()[0] in list(eloTypes.keys()):
-        print("hi")
+    if cleanString.split()[0] in eloTypes.keys():
+        print "hi"
 
     session = requests.Session()
     response = session.get("https://api.guardian.gg/v2/players/1/{0}?lc=en".format(username), headers=headers)
@@ -84,9 +84,9 @@ def elo(username,mode):
     if mode in eloTypes:
         try:
             elos = map['player']['stats']
-            print(elos)
+            print elos
             controlElo = elos[next(index for (index, d) in enumerate(elos) if d["mode"] == eloTypes[mode])]
-            print(controlElo)
+            print controlElo
             return controlElo
         except:
             return 0
@@ -97,4 +97,4 @@ def substring_message_without_trigger_word(message, trigger):
     return without_trigger
 
 elo = elo("moistturtleneck","control")
-print(elo)
+print elo
